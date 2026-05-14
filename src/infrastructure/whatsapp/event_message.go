@@ -217,6 +217,8 @@ func buildMessageBody(ctx context.Context, client *whatsmeow.Client, evt *events
 }
 
 func buildOptionalFields(ctx context.Context, client *whatsmeow.Client, evt *events.Message, msg *waE2E.Message, payload map[string]any) error {
+	buildMentionFields(ctx, client, msg, payload)
+
 	if evt.IsViewOnce {
 		payload["view_once"] = true
 	}
@@ -236,6 +238,45 @@ func buildOptionalFields(ctx context.Context, client *whatsmeow.Client, evt *eve
 	buildOtherMessageTypes(msg, payload)
 
 	return nil
+}
+
+func buildMentionFields(ctx context.Context, client *whatsmeow.Client, msg *waE2E.Message, payload map[string]any) {
+	ci := utils.ExtractContextInfo(msg)
+	if ci == nil {
+		return
+	}
+
+	mentionedJIDs := ci.GetMentionedJID()
+	if len(mentionedJIDs) == 0 {
+		return
+	}
+
+	normalizedMentions := make([]string, 0, len(mentionedJIDs))
+	for _, rawMention := range mentionedJIDs {
+		mentionJID, err := types.ParseJID(rawMention)
+		if err != nil {
+			normalizedMentions = append(normalizedMentions, rawMention)
+			continue
+		}
+
+		normalizedMentions = append(normalizedMentions, NormalizeJIDFromLID(ctx, mentionJID, client).ToNonAD().String())
+	}
+
+	payload["mentioned_jid"] = normalizedMentions
+
+	if client == nil || client.Store == nil || client.Store.ID == nil {
+		return
+	}
+
+	selfJID := NormalizeJIDFromLID(ctx, client.Store.ID.ToNonAD(), client).ToNonAD().String()
+	for _, mention := range normalizedMentions {
+		if mention == selfJID {
+			payload["is_tagged_me"] = true
+			return
+		}
+	}
+
+	payload["is_tagged_me"] = false
 }
 
 func buildMediaFields(ctx context.Context, client *whatsmeow.Client, msg *waE2E.Message, payload map[string]any) error {
