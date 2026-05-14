@@ -17,6 +17,7 @@ var (
 
 	McpPort = "8080"
 	McpHost = "localhost"
+	McpBaseURL = ""
 
 	PathQrCode    = "statics/qrcode"
 	PathSendItems = "statics/senditems"

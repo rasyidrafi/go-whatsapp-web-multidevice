@@ -146,6 +146,9 @@ func initEnvConfig() {
 	if envPresenceOnConnect := viper.GetString("whatsapp_presence_on_connect"); envPresenceOnConnect != "" {
 		config.WhatsappPresenceOnConnect = envPresenceOnConnect
 	}
+	if envMcpBaseURL := viper.GetString("mcp_base_url"); envMcpBaseURL != "" {
+		config.McpBaseURL = envMcpBaseURL
+	}
 
 	// Chatwoot settings
 	if viper.IsSet("chatwoot_enabled") {

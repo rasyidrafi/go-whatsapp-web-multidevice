@@ -49,6 +49,7 @@ func (s *SendHandler) toolSendText() mcp.Tool {
 		),
 		mcp.WithArray("mentions",
 			mcp.Description("List of phone numbers or JIDs to mention (ghost mentions - users will be notified but @phone won't appear in message text). Use \"@everyone\" to mention all group participants. Example: [\"628123456789\", \"@everyone\"]"),
+			mcp.WithStringItems(),
 		),
 	)
 

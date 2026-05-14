@@ -474,7 +474,7 @@ func ExtractMedia(ctx context.Context, client *whatsmeow.Client, storageLocation
 	extension := determineMediaExtension(originalFilename, extractedMedia.MimeType)
 
 	extractedMedia.MediaPath = fmt.Sprintf("%s/%d-%s%s", storageLocation, time.Now().Unix(), uuid.NewString(), extension)
-	err = os.WriteFile(extractedMedia.MediaPath, data, 0600)
+	err = os.WriteFile(extractedMedia.MediaPath, data, 0644)
 	if err != nil {
 		return extractedMedia, err
 	}
